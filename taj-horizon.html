@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Taj Horizon | Guest to Legend</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap');
+:root {
+  --bg:#0c0a09; --card:rgba(255,255,255,0.045); --border:rgba(212,175,55,0.2);
+  --gold:#d4af37; --gold-l:#f0d78c; --green:#34d399; --text:#faf7f2; --muted:#a8a29e;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
+background-image:radial-gradient(ellipse at top,rgba(212,175,55,0.07),transparent 55%),linear-gradient(180deg,#0c0a09,#1c1917)}
+.header{background:rgba(12,10,9,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:9px 12px;position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:8px}
+.logo h1{font-family:'Playfair Display',serif;font-size:1.15rem;background:linear-gradient(90deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.profile-pic{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold);background:#333}
+.stars{display:flex;gap:1px}.star{font-size:0.9rem;color:#44403c}.star.on{color:var(--gold);text-shadow:0 0 6px rgba(212,175,55,.5)}
+.stats{display:flex;gap:6px}.stat{background:rgba(212,175,55,.09);border:1px solid var(--border);padding:4px 9px;border-radius:16px;font-size:0.76rem;font-weight:600;display:flex;align-items:center;gap:3px}
+.stat span{color:var(--gold-l)}
+.main{max-width:460px;margin:0 auto;padding:10px 10px 80px}
+.event-banner{background:linear-gradient(90deg,rgba(212,175,55,.12),rgba(52,211,153,.1));border:1px solid rgba(212,175,55,.3);border-radius:11px;padding:9px 11px;margin-bottom:10px;display:none;align-items:center;gap:7px;font-size:0.78rem}
+.event-banner.show{display:flex}
+.card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;margin-bottom:10px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.card-title{font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:5px}
+.badge{background:rgba(212,175,55,.15);color:var(--gold);font-size:0.66rem;padding:2px 7px;border-radius:9px;font-weight:600}
+.rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.room{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:8px 5px;text-align:center;position:relative;overflow:hidden;min-height:88px}
+.room.empty{border-style:dashed;border-color:rgba(212,175,55,.25)}
+.room.occupied{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.06)}
+.room-num{font-size:0.62rem;color:var(--muted)}.room-emoji{font-size:1.3rem;margin:3px 0}
+.room-name{font-size:0.66rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-time{font-size:0.6rem;color:var(--muted)}
+.room-bar{position:absolute;bottom:0;left:0;height:2.5px;background:linear-gradient(90deg,var(--gold),var(--green))}
+.guest-list{display:flex;flex-direction:column;gap:7px;max-height:200px;overflow-y:auto}
+.guest{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:8px 9px}
+.guest.vip{border-color:rgba(192,132,252,.35)}.guest.rich{border-color:rgba(251,191,36,.35)}.guest.angry{border-color:rgba(248,113,113,.35)}
+.guest-flag{font-size:1.2rem;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:50%}
+.guest-info{flex:1;min-width:0}.guest-name{font-size:0.76rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.guest-meta{font-size:0.62rem;color:var(--muted)}
+.btn-assign{background:linear-gradient(135deg,var(--gold),#b8860b);color:#1c1917;border:none;padding:5px 10px;border-radius:7px;font-weight:700;font-size:0.7rem}
+.upgrade{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.upgrade:last-child{border-bottom:none}
+.up-info h4{font-size:0.78rem;font-weight:600}.up-info p{font-size:0.62rem;color:var(--muted);margin-top:1px}
+.btn-up{background:linear-gradient(135deg,var(--gold),#b8860b);color:#1c1917;border:none;padding:6px 10px;border-radius:7px;font-weight:700;font-size:0.7rem;white-space:nowrap}
+.btn-up:disabled{opacity:.35}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(12,10,9,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:8px 10px;display:flex;justify-content:space-around;z-index:40}
+.nav-btn{background:none;border:none;color:var(--muted);font-size:0.62rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 8px}
+.nav-btn.active{color:var(--gold)}.nav-btn span{font-size:1.15rem}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(25px);background:rgba(28,25,23,.97);border:1px solid var(--border);padding:9px 14px;border-radius:9px;font-size:0.76rem;z-index:100;opacity:0;transition:all .3s;max-width:92%;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:200;padding:14px}
+.modal.show{display:flex}
+.modal-box{background:#1c1917;border:1px solid var(--border);border-radius:15px;padding:20px 16px;width:100%;max-width:350px;text-align:center;max-height:88vh;overflow-y:auto}
+.modal-box h2{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--gold);margin-bottom:8px}
+.modal-box p{font-size:0.8rem;color:var(--muted);line-height:1.45;margin-bottom:7px}
+.input-group{margin:10px 0;text-align:left}
+.input-group label{font-size:0.72rem;color:var(--muted);display:block;margin-bottom:4px}
+.input-group input,.input-group select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:0.88rem;outline:none}
+.input-group input:focus,.input-group select:focus{border-color:var(--gold)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b8860b);color:#1c1917;border:none;padding:11px 20px;border-radius:10px;font-weight:700;font-size:0.86rem;cursor:pointer;margin-top:10px;width:100%}
+.avatar-preview{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin:0 auto 10px;display:block;background:#333}
+.section{display:none}.section.active{display:block}
+.visitor-bar{text-align:center;font-size:0.62rem;color:var(--muted);padding:5px;opacity:.75}
+.ad-box{background:#111;border:2px dashed var(--border);border-radius:12px;padding:24px 14px;text-align:center;margin:8px 0}
+.ad-box h3{color:var(--gold);font-size:.95rem;margin-bottom:6px}
+.ad-box p{font-size:.74rem;color:var(--muted);margin-bottom:10px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#44403c;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <img id="headerPic" class="profile-pic" src="" style="display:none" alt="">
+    <h1>Taj Horizon</h1>
+    <div class="stars" id="starsEl"></div>
+  </div>
+  <div class="stats">
+    <div class="stat">💰 <span id="moneyEl">2500</span></div>
+    <div class="stat">📅 <span id="dayEl">1</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="event-banner" id="eventBanner"><span id="eventText">Special Event</span></div>
+
+  <div class="section active" id="sec-rooms">
+    <div class="card">
+      <div class="card-head"><div class="card-title">🚪 Rooms</div><div class="badge" id="roomBadge">0/3</div></div>
+      <div class="rooms-grid" id="roomsGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">👥 Waiting Guests</div><div class="badge" id="guestBadge">0</div></div>
+      <div class="guest-list" id="guestList"><div style="text-align:center;color:var(--muted);padding:14px;font-size:.78rem">Guests arriving...</div></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-upgrades">
+    <div class="card"><div class="card-title" style="margin-bottom:10px">⬆️ Upgrades</div><div id="upgradeList"></div></div>
+  </div>
+
+  <div class="section" id="sec-stats">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px">📊 Your Profile</div>
+      <div style="text-align:center;margin-bottom:12px">
+        <img id="statPic" class="avatar-preview" src="" style="display:none">
+        <div id="statName" style="font-weight:600;font-size:.95rem">—</div>
+        <div id="statState" style="font-size:.75rem;color:var(--muted)">—</div>
+      </div>
+      <div style="font-size:.8rem;line-height:1.7">
+        <div>Guests Served: <strong id="statGuests">0</strong></div>
+        <div>Tips: <strong id="statTips">₹0</strong></div>
+        <div>Tajness: <strong id="statStars">3★</strong></div>
+        <div>Days: <strong id="statDays">1</strong></div>
+        <div>Session: <strong id="statSession">0m</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="visitor-bar">👁️ Plays: <span id="playCount">0</span> • Unique identity ready</div>
+</div>
+
+<div class="bottom-bar">
+  <button class="nav-btn active" onclick="showSection('rooms',this)"><span>🏨</span>Rooms</button>
+  <button class="nav-btn" onclick="showSection('upgrades',this)"><span>⬆️</span>Upgrade</button>
+  <button class="nav-btn" onclick="showSection('stats',this)"><span>📊</span>Profile</button>
+  <button class="nav-btn" onclick="openHowTo()"><span>❓</span>Help</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Registration -->
+<div class="modal show" id="regModal">
+  <div class="modal-box">
+    <h2>Taj Horizon</h2>
+    <p style="color:var(--gold);font-size:.85rem">Guest to Legend</p>
+    <p style="font-size:.76rem;margin-top:4px">Apna profile banao – unique identity ke saath</p>
+    <div style="text-align:center;margin:12px 0">
+      <img id="previewPic" class="avatar-preview" src="" style="display:none">
+      <label style="font-size:.75rem;color:var(--gold);cursor:pointer">📷 Photo lagao (optional)
+        <input type="file" id="picInput" accept="image/*" style="display:none" onchange="previewImage(this)">
+      </label>
+    </div>
+    <div class="input-group"><label>Your Name</label><input type="text" id="playerName" placeholder="e.g. Priya Sharma" maxlength="28"></div>
+    <div class="input-group"><label>Your State</label>
+      <select id="playerState">
+        <option value="">Select State</option>
+        <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Delhi</option>
+        <option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+        <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
+        <option>Maharashtra</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+        <option>Tamil Nadu</option><option>Telangana</option><option>Uttar Pradesh</option><option>Uttarakhand</option>
+        <option>West Bengal</option><option>Other</option>
+      </select>
+    </div>
+    <button class="btn-gold" onclick="registerPlayer()">Start My Journey →</button>
+  </div>
+</div>
+
+<div class="modal" id="howtoModal">
+  <div class="modal-box">
+    <h2>How to Play</h2>
+    <p style="text-align:left;font-size:.78rem;line-height:1.55">
+      1. Guests aayenge – Assign button dabao<br>
+      2. Unki special request bhi poori karo<br>
+      3. Tips + Satisfaction se Tajness badhao<br>
+      4. Upgrade karke 5★ tak le jao<br>
+      5. High Tajness = Legendary status
+    </p>
+    <button class="btn-gold" onclick="closeHowTo()">Got it!</button>
+  </div>
+</div>
+
+<div class="modal" id="winModal">
+  <div class="modal-box">
+    <h2>🏆 Legend Status!</h2>
+    <p>Aapne Taj Horizon ko world-class experience bana diya.</p>
+    <p>Days: <strong id="finalDays">0</strong></p>
+    <button class="btn-gold" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<div class="modal" id="adModal">
+  <div class="modal-box">
+    <div class="ad-box">
+      <h3>Sponsored</h3>
+      <p>Placeholder ad (5 min ke baad). Real AdMob / Adsterra se replace kar sakte ho – no long approval wait.</p>
+      <div style="color:var(--gold-l);font-size:.82rem">Closing in <span id="adCountdown">5</span>s</div>
+    </div>
+    <button class="btn-gold" id="adCloseBtn" disabled onclick="closeAd()">Continue</button>
+  </div>
+</div>
+
+<script>
+// ===== AUDIO =====
+let actx=null;
+function initAudio(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)()}
+function tone(f,t,d,v=0.11){if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+d);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}
+function sfxCoin(){initAudio();tone(880,'sine',.07,.1);setTimeout(()=>tone(1180,'sine',.1,.09),50)}
+function sfxTip(){initAudio();tone(660,'triangle',.09,.12);setTimeout(()=>tone(990,'triangle',.12,.1),70);setTimeout(()=>tone(1320,'sine',.18,.07),140)}
+function sfxIn(){initAudio();tone(440,'sine',.08,.09);setTimeout(()=>tone(554,'sine',.12,.09),80)}
+function sfxUp(){initAudio();tone(523,'square',.07,.07);setTimeout(()=>tone(659,'square',.07,.07),60);setTimeout(()=>tone(784,'square',.12,.09),120)}
+function sfxEv(){initAudio();tone(392,'sine',.12,.1);setTimeout(()=>tone(523,'sine',.12,.1),100);setTimeout(()=>tone(659,'sine',.2,.08),200)}
+function sfxMot(){initAudio();tone(587,'triangle',.1,.1);setTimeout(()=>tone(740,'triangle',.15,.09),90)}
+function sfxClick(){initAudio();tone(600,'sine',.04,.06)}
+
+// ===== DATA =====
+const FLAGS={IN:'🇮🇳',US:'🇺🇸',UK:'🇬🇧',AE:'🇦🇪',JP:'🇯🇵',FR:'🇫🇷',DE:'🇩🇪',SG:'🇸🇬',AU:'🇦🇺',CA:'🇨🇦'};
+const NAMES={
+  IN:{f:['Aarav','Priya','Rahul','Ananya','Vikram','Sneha','Karan','Neha','Rohan','Isha'],l:['Sharma','Patel','Singh','Gupta','Verma','Reddy']},
+  US:{f:['James','Emily','Michael','Olivia'],l:['Smith','Johnson','Brown']},
+  UK:{f:['Oliver','Amelia','Harry','Isla'],l:['Smith','Jones','Taylor']},
+  AE:{f:['Omar','Layla','Yusuf','Fatima'],l:['Al-Maktoum','Hassan']},
+  JP:{f:['Hiroshi','Yuki','Kenji','Sakura'],l:['Tanaka','Suzuki']},
+  FR:{f:['Pierre','Camille','Louis','Chloe'],l:['Martin','Bernard']},
+  DE:{f:['Hans','Anna','Lukas','Emma'],l:['Müller','Schmidt']},
+  SG:{f:['Wei','Mei','Jun','Ling'],l:['Tan','Lim']},
+  AU:{f:['Jack','Chloe','Noah','Mia'],l:['Smith','Williams']},
+  CA:{f:['Liam','Emma','Noah','Olivia'],l:['Smith','Brown']}
+};
+const GTYPES={normal:{label:'Guest',tip:1,stay:14,pay:90},vip:{label:'VIP',tip:2.3,stay:18,pay:200},rich:{label:'Elite',tip:3.2,stay:22,pay:280},angry:{label:'Difficult',tip:.5,stay:10,pay:55}};
+const UPS=[
+  {id:'rooms',name:'New Suite',desc:'+1 Room',base:1500,max:8,icon:'🛏️'},
+  {id:'staff',name:'Train Staff',desc:'Faster + better tips',base:1000,max:6,icon:'🧹'},
+  {id:'facilities',name:'Add Facility',desc:'Spa • Pool • Dining',base:2000,max:5,icon:'🏊'},
+  {id:'marketing',name:'Marketing',desc:'More VIP & foreign guests',base:1300,max:5,icon:'🌍'}
+];
+const MOTS=["💡 Staff train karo – tips badhenge!","🚀 Naye rooms se zyada guests aayenge","🌟 Facilities se VIP khush hote hain","📢 Marketing se elite guests aate hain","⭐ Guests ko jaldi assign karo","🧹 Better service = higher Tajness"];
+
+let S={money:2500,day:1,stars:3,rooms:[],waiting:[],ups:{rooms:3,staff:1,facilities:0,marketing:0},
+nextId:1,totalG:0,totalT:0,won:false,name:'',state:'',pic:'',session:Date.now(),adShown:false};
+
+function save(){localStorage.setItem('tajH2',JSON.stringify({money:S.money,day:S.day,stars:S.stars,ups:S.ups,totalG:S.totalG,totalT:S.totalT,won:S.won,name:S.name,state:S.state,pic:S.pic}))}
+function load(){try{const d=JSON.parse(localStorage.getItem('tajH2'));if(d){S.money=d.money||2500;S.day=d.day||1;S.stars=d.stars||3;S.ups=d.ups||S.ups;S.totalG=d.totalG||0;S.totalT=d.totalT||0;S.won=d.won||false;S.name=d.name||'';S.state=d.state||'';S.pic=d.pic||''}}catch(e){}}
+function playCount(){let c=parseInt(localStorage.getItem('tajPlays2')||'0')+1;localStorage.setItem('tajPlays2',c);document.getElementById('playCount').textContent=c}
+
+function previewImage(inp){
+  const f=inp.files[0];if(!f)return;
+  if(f.size>800000){showToast('Photo thodi chhoti rakho (max 800KB)');return}
+  const r=new FileReader();r.onload=e=>{document.getElementById('previewPic').src=e.target.result;document.getElementById('previewPic').style.display='block';S.pic=e.target.result};r.readAsDataURL(f)
+}
+
+function registerPlayer(){
+  const n=document.getElementById('playerName').value.trim();
+  const st=document.getElementById('playerState').value;
+  if(!n||n.length<2){showToast('Naam daalo');return}
+  if(!st){showToast('State select karo');return}
+  S.name=n;S.state=st;save();
+  console.log('Player:',{name:S.name,state:S.state,time:new Date().toISOString()}); // ready for backend
+  document.getElementById('regModal').classList.remove('show');
+  initAudio();sfxClick();startGame();
+}
+
+function startGame(){
+  for(let i=1;i<=S.ups.rooms;i++)S.rooms.push({id:i,guest:null,timer:0,max:0});
+  if(S.pic){document.getElementById('headerPic').src=S.pic;document.getElementById('headerPic').style.display='block';
+  document.getElementById('statPic').src=S.pic;document.getElementById('statPic').style.display='block'}
+  renderAll();startLoop();
+  setTimeout(()=>spawn(),900);setTimeout(()=>spawn(),2200);setTimeout(()=>spawn(),3800);
+  setInterval(()=>{if(S.won)return;showToast(MOTS[Math.floor(Math.random()*MOTS.length)]);sfxMot()},48000+Math.random()*20000);
+  setTimeout(()=>{if(!S.adShown&&!S.won)showAd()},300000); // 5 min
+}
+
+function renderAll(){renderStars();renderMoney();renderRooms();renderGuests();renderUps();renderStats();
+  document.getElementById('dayEl').textContent=S.day;
+  document.getElementById('roomBadge').textContent=`${S.rooms.filter(r=>r.guest).length}/${S.rooms.length}`;
+  document.getElementById('guestBadge').textContent=S.waiting.length}
+function renderStars(){const el=document.getElementById('starsEl');el.innerHTML='';for(let i=1;i<=5;i++){const s=document.createElement('span');s.className='star'+(i<=S.stars?' on':'');s.textContent='★';el.appendChild(s)}}
+function renderMoney(){document.getElementById('moneyEl').textContent=Math.floor(S.money).toLocaleString('en-IN')}
+function renderRooms(){const g=document.getElementById('roomsGrid');g.innerHTML='';
+  S.rooms.forEach(r=>{const d=document.createElement('div');d.className='room '+(r.guest?'occupied':'empty');
+    if(r.guest){const gt=r.guest,pct=Math.max(0,(r.max-r.timer)/r.max*100);
+      d.innerHTML=`<div class="room-num">#${r.id}</div><div class="room-emoji">${gt.flag}</div><div class="room-name">${gt.name.split(' ')[0]}</div><div class="room-time">${Math.ceil(r.timer)}s</div><div class="room-bar" style="width:${pct}%"></div>`}
+    else{d.innerHTML=`<div class="room-num">#${r.id}</div><div class="room-emoji">🛏️</div><div class="room-name" style="color:var(--muted)">Empty</div><div class="room-time">Ready</div>`;d.onclick=()=>quick(r.id)}
+    g.appendChild(d)})}
+function renderGuests(){const l=document.getElementById('guestList');
+  if(!S.waiting.length){l.innerHTML=`<div style="text-align:center;color:var(--muted);padding:14px;font-size:.78rem">Waiting...</div>`;return}
+  l.innerHTML='';S.waiting.forEach(g=>{const d=document.createElement('div');d.className='guest '+g.color;
+    d.innerHTML=`<div class="guest-flag">${g.flag}</div><div class="guest-info"><div class="guest-name">${g.name}</div><div class="guest-meta">${g.label} • ₹${g.pay}+tip</div></div><button class="btn-assign" onclick="assign(${g.id})">Assign</button>`;l.appendChild(d)})}
+function renderUps(){const l=document.getElementById('upgradeList');l.innerHTML='';
+  UPS.forEach(u=>{const lv=S.ups[u.id],cost=Math.floor(u.base*Math.pow(1.4,lv)),max=lv>=u.max;
+    const d=document.createElement('div');d.className='upgrade';
+    d.innerHTML=`<div class="up-info"><h4>${u.icon} ${u.name} <span style="color:var(--muted);font-weight:400;font-size:.7rem">Lv.${lv}</span></h4><p>${u.desc}</p></div><button class="btn-up" ${max||S.money<cost?'disabled':''} onclick="buy('${u.id}')">${max?'MAX':'₹'+cost.toLocaleString('en-IN')}</button>`;l.appendChild(d)})}
+function renderStats(){document.getElementById('statName').textContent=S.name||'—';document.getElementById('statState').textContent=S.state||'—';
+  document.getElementById('statGuests').textContent=S.totalG;document.getElementById('statTips').textContent='₹'+S.totalT.toLocaleString('en-IN');
+  document.getElementById('statStars').textContent=S.stars+'★';document.getElementById('statDays').textContent=S.day;
+  document.getElementById('statSession').textContent=Math.floor((Date.now()-S.session)/60000)+'m'}
+
+function spawn(){if(S.won||S.waiting.length>=5)return;
+  const cs=Object.keys(FLAGS);let c='IN';if(Math.random()<.36+S.ups.marketing*.1)c=cs[Math.floor(Math.random()*cs.length)];
+  let ts=['normal','normal','normal','vip','rich','angry'];if(S.ups.marketing>=2)ts.push('vip','rich');if(S.stars>=4)ts=ts.filter(t=>t!=='angry').concat(['vip','rich']);
+  const tk=ts[Math.floor(Math.random()*ts.length)],b=GTYPES[tk],p=NAMES[c]||NAMES.IN;
+  const nm=p.f[Math.floor(Math.random()*p.f.length)]+' '+p.l[Math.floor(Math.random()*p.l.length)];
+  const g={id:S.nextId++,type:tk,label:b.label,flag:FLAGS[c],name:nm,color:tk==='normal'?'':tk,pay:b.pay+Math.floor(Math.random()*40),tipMult:b.tip,stay:Math.max(8,b.stay-S.ups.staff*1.1)};
+  S.waiting.push(g);renderGuests();document.getElementById('guestBadge').textContent=S.waiting.length;showToast(`${g.flag} ${g.name} arrived`);sfxIn()}
+function assign(id){const e=S.rooms.find(r=>!r.guest);if(!e){showToast('No empty rooms');return}
+  const i=S.waiting.findIndex(g=>g.id===id);if(i<0)return;const g=S.waiting.splice(i,1)[0];e.guest=g;e.timer=g.stay;e.max=g.stay;renderAll();showToast(`${g.flag} → Room ${e.id}`);sfxIn()}
+function quick(id){if(!S.waiting.length){showToast('No guests');return}assign(S.waiting[0].id)}
+function buy(id){const u=UPS.find(x=>x.id===id),lv=S.ups[id];if(lv>=u.max)return;const cost=Math.floor(u.base*Math.pow(1.4,lv));if(S.money<cost)return;
+  S.money-=cost;S.ups[id]++;if(id==='rooms')S.rooms.push({id:S.rooms.length+1,guest:null,timer:0,max:0});updateStars();renderAll();save();showToast(`✅ ${u.name}`);sfxUp()}
+function updateStars(){let s=3;if(S.ups.rooms>=5)s++;if(S.ups.staff>=3&&S.ups.facilities>=2)s++;if(S.ups.facilities>=3&&S.ups.marketing>=3&&S.ups.rooms>=6)s=5;S.stars=Math.min(5,s);
+  if(S.stars===5&&!S.won){S.won=true;document.getElementById('finalDays').textContent=S.day;document.getElementById('winModal').classList.add('show');sfxEv();save()}}
+function process(dt){S.rooms.forEach(r=>{if(!r.guest)return;r.timer-=dt;if(r.timer<=0){const g=r.guest;const tip=Math.floor(g.pay*g.tipMult*(.55+S.ups.staff*.12+S.ups.facilities*.08));const tot=g.pay+tip;
+  S.money+=tot;S.totalG++;S.totalT+=tip;showToast(`💰 +₹${tot} (Tip ₹${tip})`);sfxTip();setTimeout(sfxCoin,100);r.guest=null;r.timer=0;save()}})}
+
+let last=performance.now(),gT=0,dT=0,eT=0;
+function startLoop(){function loop(n){const dt=(n-last)/1000;last=n;if(!S.won){process(dt);gT+=dt;dT+=dt;eT+=dt;
+  const rate=8-S.ups.marketing*.8-(S.stars-3)*.6;if(gT>Math.max(4,rate)){spawn();gT=0}
+  if(dT>24){S.day++;dT=0;document.getElementById('dayEl').textContent=S.day;save()}
+  if(eT>36+Math.random()*30){trigEvent();eT=0}renderRooms();renderMoney();if(Math.random()<.015)renderStats()}
+  requestAnimationFrame(loop)}requestAnimationFrame(loop)}
+function trigEvent(){const evs=[{t:'🌟 Celebrity stay! Big tips!',f:()=>S.money+=900+S.stars*200},{t:'😤 Complaint... -₹300',f:()=>S.money=Math.max(0,S.money-300)},
+  {t:'🎉 Festival rush!',f:()=>{spawn();spawn()}},{t:'💎 Grand tip from tycoon!',f:()=>S.money+=1300},{t:'🧹 Staff excellence bonus!',f:()=>S.money+=500+S.ups.staff*150}];
+  const e=evs[Math.floor(Math.random()*evs.length)];document.getElementById('eventText').textContent=e.t;document.getElementById('eventBanner').classList.add('show');
+  setTimeout(()=>document.getElementById('eventBanner').classList.remove('show'),4000);e.f();showToast(e.t);sfxEv();renderMoney();save()}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast show';setTimeout(()=>t.classList.remove('show'),2400)}
+function showAd(){S.adShown=true;document.getElementById('adModal').classList.add('show');let s=5;document.getElementById('adCountdown').textContent=s;document.getElementById('adCloseBtn').disabled=true;
+  const iv=setInterval(()=>{s--;document.getElementById('adCountdown').textContent=s;if(s<=0){clearInterval(iv);document.getElementById('adCloseBtn').disabled=false}},1000)}
+function closeAd(){document.getElementById('adModal').classList.remove('show');sfxClick()}
+function showSection(n,b){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-'+n).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');sfxClick()}
+function openHowTo(){document.getElementById('howtoModal').classList.add('show')}
+function closeHowTo(){document.getElementById('howtoModal').classList.remove('show')}
+
+load();playCount();
+if(S.name&&S.state){document.getElementById('regModal').classList.remove('show');startGame()}
+else document.getElementById('regModal').classList.add('show');
+</script>
+</body>
+</html>
